@@ -1,0 +1,21 @@
+{
+  "name": "مجمع شهداء التربية النموذجي",
+  "short_name": "مجمع شهداء التربية النموذجي",
+  "start_url": "/MGMA/index.html",
+  "display": "standalone",
+  "background_color": "#4CAF50",
+  "theme_color": "#4CAF50",
+  "description": "مجمع شهداء التربية النموذج نتائج الطلاب متابعة الغياب خدمات طلابية وغيرها",
+  "icons": [
+    {
+      "src": "/MGMA/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/MGMA/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

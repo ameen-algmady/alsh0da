@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="موقع مجمع شهداء التربية النموذجي - تقديم نتائج الطلاب الصف الأول الثانوي.">
+    <title>مجمع شهداء التربية النموذجي - الرئيسية</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 3px; /* تقليل التباعد الداخلي */
+    height: 15px; /* تعيين ارتفاع الصف */
+    text-align: center; /* توسيط النص أفقيًا */
+    vertical-align: middle; /* توسيط النص عموديًا */
+}
+h4 {
+    font-size: 1px; /* تصغير حجم الخط */
+    margin: 0px 0; /* تقليل المسافة العلوية والسفلية */
+    line-height: 0.1; /* تقليل ارتفاع السطر */
+    vertical-align: middle; /* توسيط النص عموديًا */
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+header {
+    background-color: #4CAF50;
+    color: black;
+    padding: 10px 0;
+    text-align: center; /* توسيط النص داخل الهيدر */
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+.home-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center; /* توسيط النص أفقيًا */
+    padding: 8px 12px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.home-button i {
+    margin-right: 5px;
+}
+
+.home-button:hover {
+    background-color: #45a049;
+}
+
+    </style>
+</head>
+<body>
+    <header>
+     <div class="logo">
+            <img src="school-logo.png" alt="شعار مجمع شهداء التربية النموذجي">
+        <h1>مجمع شهداء التربية النموذجي</h1>
+        <h2>نتائج آخر العام للصف الاول الثانوي</h2>
+    </header>
+<a href="index.html" class="home-button">🏠 الرئيسية</a>
+    <section id="results">
+        <h2>نتائج الطلاب</h2>
+        <form id="resultsForm">
+            <label for="studentCode">أدخل كود الطالب:</label>
+            <input type="text" id="studentCode" name="studentCode" required>
+            <button type="submit">عرض النتائج</button>
+        </form>
+        <div id="resultsOutput"></div>
+    </section>
+
+   
+
+
+    <script>
+        document.getElementById('resultsForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const studentCode = document.getElementById('studentCode').value.trim();
+            const apiUrl = 'https://script.google.com/macros/s/AKfycbxgiRWbbli3VQ-9K_7Z0YSXhd09vtCsNhWNi0DgwQF5yHWc3m80rUrR92Wf85_rub2R/exec';
+
+            if (!studentCode) {
+                alert("يرجى إدخال كود الطالب!");
+                return;
+            }
+
+            fetch(`${apiUrl}?code=${studentCode}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    const output = document.getElementById('resultsOutput');
+                    output.innerHTML = "";
+
+                    if (data.status !== "نجاح") {
+                        output.innerHTML = `<p style="color: red;">${data.message}</p>`;
+                        return;
+                    }
+
+                     // عرض معلومات الطالب
+                    let studentInfo = `<h4></h4><table><tr><th>المجال</th><th>القيمة</th></tr>`;
+                    for (const [key, value] of Object.entries(data.بيانات_الطالب)) {
+                        studentInfo += `<tr><td><strong>${key}</strong></td><td>${value || 'غير متوفر'}</td></tr>`;
+                    }
+                    studentInfo += `</table>`;
+                    let subjectsTable = `<h4></h4><table><tr><th>المادة</th><th>محصلة أولى</th><th>نصف العام</th><th>محصلة ثانية</th><th>آخر العام</th><th>المجموع</th></tr>`;
+                    for (const [subject, grades] of Object.entries(data.المواد_الدراسية)) {
+                        subjectsTable += `<tr><td>${subject}</td><td>${grades.محصلة_أولى}</td><td>${grades.نصف_العام}</td><td>${grades.محصلة_ثانية}</td><td>${grades.آخر_العام}</td><td>${grades.المجموع}</td></tr>`;
+                    }
+                    subjectsTable += `</table>`;
+
+                     // عرض النتائج النهائية
+                    let finalResults = `<h4></h4><table><tr><th>المجال</th><th>القيمة</th></tr>`;
+                    finalResults += `<tr><td>المجموع الكلي</td><td>${data.النتيجة_النهائية?.المجموع_الكلي || 'غير متوفر'}</td></tr>`;
+                    finalResults += `<tr><td>النتيجة</td><td>${data.النتيجة_النهائية?.النتيجة || 'غير متوفر'}</td></tr>`;
+                    finalResults += `<tr><td>النسبة</td><td>${data.النتيجة_النهائية?.النسبة || 'غير متوفر'}%</td></tr>`;
+                    finalResults += `<tr><td>الترتيب</td><td>${data.النتيجة_النهائية?.الترتيب || 'غير متوفر'}</td></tr>`;
+                    finalResults += `</table>`;
+
+                    output.innerHTML = studentInfo + subjectsTable + finalResults;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("حدث خطأ أثناء جلب البيانات.");
+                });
+        });
+    </script>
+</body>
+</html>
