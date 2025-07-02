@@ -164,6 +164,11 @@
       .catch(err => console.error('❌ Service Worker Failed', err));
   }
 </script>
+<script>
+  if (typeof navigator.serviceWorker !== 'undefined') {
+    navigator.serviceWorker.register('sw.js')
+  }
+</script>
 
 </body>
 </html>
