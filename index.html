@@ -148,8 +148,7 @@
       Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
           new Notification('📢 إشعار من المجمع', {
-            body: 'body: 'نتائج الفصل الدراسي الثاني جاهزة الآن، تصفحها من الموقع!',
-د.',
+            body: 'شكرًا لتفعيلك الإشعارات! سيتم إعلامك بكل جديد.',
             icon: 'logo.png'
           });
         } else {
@@ -166,9 +165,11 @@
   }
 </script>
 <script>
-  if (typeof navigator.serviceWorker !== 'undefined') {
-    navigator.serviceWorker.register('sw.js')
-  }
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/alsh0da/service-worker.js')
+    .then(reg => console.log('Service Worker مسجل:', reg))
+    .catch(err => console.error('فشل التسجيل:', err));
+}
 </script>
 
 </body>
