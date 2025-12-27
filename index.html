@@ -8,12 +8,15 @@
     label { display: block; margin-top: 10px; }
     input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; }
     button { margin-top: 15px; padding: 10px 20px; }
-    #output { background: #f4f4f4; padding: 10px; margin-top: 20px; white-space: pre-wrap; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #eee; }
   </style>
 </head>
 <body>
-  <h1>📚 إدخال واجبات الطلاب</h1>
+  <h1>📚 نظام الواجبات</h1>
 
+  <!-- نموذج إدخال واجبات -->
   <form id="homeworkForm">
     <label>الصف:
       <input type="text" name="grade" required>
@@ -52,11 +55,33 @@
     <button type="submit">💾 حفظ الواجب</button>
   </form>
 
-  <div id="output"></div>
+  <!-- زر عرض الواجبات -->
+  <button onclick="getHomework()">📖 عرض الواجبات</button>
+
+  <!-- جدول عرض الواجبات -->
+  <table id="homeworkTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>الصف</th>
+        <th>الشعبة</th>
+        <th>المادة</th>
+        <th>السبت</th>
+        <th>الأحد</th>
+        <th>الإثنين</th>
+        <th>الثلاثاء</th>
+        <th>الأربعاء</th>
+        <th>من تاريخ</th>
+        <th>إلى تاريخ</th>
+        <th>المعلم</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzlOR6yqBKfbEZXZp9eV-X6gh4JXSzqGpdFce2DcoCDk1Gl740TMy9iT1npiImKkgVi/exec";
 
+    // حفظ واجب جديد
     document.getElementById("homeworkForm").addEventListener("submit", function(e) {
       e.preventDefault();
 
@@ -71,12 +96,46 @@
       })
       .then(res => res.json())
       .then(result => {
-        document.getElementById("output").textContent = JSON.stringify(result, null, 2);
+        alert(result.message || "تم الحفظ");
       })
-      .catch(err => {
-        document.getElementById("output").textContent = "خطأ: " + err;
-      });
+      .catch(err => alert("خطأ: " + err));
     });
+
+    // عرض الواجبات
+    function getHomework() {
+      // هنا يمكنك تعديل المعايير حسب الحاجة
+      fetch(API_URL + "?action=getHomework&grade=الثالث&class=أ&subject=رياضيات&startDate=2025-12-28&endDate=2025-12-30")
+        .then(res => res.json())
+        .then(data => {
+          const table = document.getElementById("homeworkTable");
+          const tbody = table.querySelector("tbody");
+          tbody.innerHTML = "";
+
+          if (data.exists) {
+            const hw = data.homework;
+            const row = `
+              <tr>
+                <td>الثالث</td>
+                <td>أ</td>
+                <td>رياضيات</td>
+                <td>${hw.saturday}</td>
+                <td>${hw.sunday}</td>
+                <td>${hw.monday}</td>
+                <td>${hw.tuesday}</td>
+                <td>${hw.wednesday}</td>
+                <td>2025-12-28</td>
+                <td>2025-12-30</td>
+                <td>أمين</td>
+              </tr>
+            `;
+            tbody.innerHTML = row;
+            table.style.display = "table";
+          } else {
+            alert("لا توجد واجبات مسجلة لهذه الفترة");
+          }
+        })
+        .catch(err => alert("خطأ: " + err));
+    }
   </script>
 </body>
 </html>
